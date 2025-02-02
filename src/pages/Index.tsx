@@ -6,7 +6,6 @@ import ImageDropzone from '@/components/ImageDropzone';
 import ComparisonView from '@/components/ComparisonView';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface CompressionResult {
   originalUrl: string;
@@ -18,28 +17,33 @@ interface CompressionResult {
 
 const compressionMethods = [
   {
-    id: 'high',
-    name: 'High Quality',
+    id: 'high-quality',
+    name: 'High Quality Compression',
+    description: 'Minimal compression, preserves quality',
     options: { maxSizeMB: 1, maxWidthOrHeight: 1920, quality: 0.8 }
   },
   {
-    id: 'medium',
-    name: 'Balanced',
+    id: 'balanced',
+    name: 'Balanced Compression',
+    description: 'Good balance of quality and size',
     options: { maxSizeMB: 0.5, maxWidthOrHeight: 1600, quality: 0.6 }
   },
   {
-    id: 'low',
-    name: 'Maximum Compression',
+    id: 'size-optimized',
+    name: 'Size Optimized',
+    description: 'Prioritizes file size reduction',
     options: { maxSizeMB: 0.2, maxWidthOrHeight: 1200, quality: 0.4 }
   },
   {
-    id: 'tiny',
-    name: 'Tiny Size',
+    id: 'thumbnail',
+    name: 'Thumbnail Compression',
+    description: 'Small size, reduced dimensions',
     options: { maxSizeMB: 0.1, maxWidthOrHeight: 800, quality: 0.3 }
   },
   {
     id: 'webp',
     name: 'WebP Format',
+    description: 'Modern format with better compression',
     options: { maxSizeMB: 0.5, maxWidthOrHeight: 1600, useWebWorker: true }
   }
 ];
@@ -47,7 +51,6 @@ const compressionMethods = [
 const Index = () => {
   const [results, setResults] = useState<CompressionResult[]>([]);
   const [isCompressing, setIsCompressing] = useState(false);
-  const [selectedTab, setSelectedTab] = useState('high');
   const { toast } = useToast();
 
   const handleImageDrop = async (file: File) => {
@@ -96,7 +99,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen p-8 bg-gray-50">
-      <div className="max-w-6xl mx-auto space-y-8">
+      <div className="max-w-[1600px] mx-auto space-y-8">
         <div className="text-center space-y-2">
           <h1 className="text-4xl font-bold tracking-tight">Image Compressor</h1>
           <p className="text-xl text-muted-foreground">
@@ -133,44 +136,41 @@ const Index = () => {
               Compress another image
             </Button>
 
-            <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-              <TabsList className="grid grid-cols-5 gap-4">
-                {compressionMethods.map((method) => (
-                  <TabsTrigger key={method.id} value={method.id}>
-                    {method.name}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {compressionMethods.map((method) => {
                 const result = results.find(r => r.method === method.id);
                 if (!result) return null;
 
                 return (
-                  <TabsContent key={method.id} value={method.id}>
-                    <Card>
-                      <CardHeader>
-                        <CardTitle className="flex items-center justify-between">
-                          <span>{method.name}</span>
-                          <Button onClick={() => handleDownload(result)}>
-                            <Download className="mr-2 h-4 w-4" />
-                            Download
-                          </Button>
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <ComparisonView
-                          originalImage={result.originalUrl}
-                          compressedImage={result.compressedUrl}
-                          originalSize={result.originalSize}
-                          compressedSize={result.compressedSize}
-                        />
-                      </CardContent>
-                    </Card>
-                  </TabsContent>
+                  <Card key={method.id}>
+                    <CardHeader className="space-y-1">
+                      <CardTitle className="flex items-center justify-between">
+                        <span>{method.name}</span>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => handleDownload(result)}
+                        >
+                          <Download className="mr-2 h-4 w-4" />
+                          Download
+                        </Button>
+                      </CardTitle>
+                      <p className="text-sm text-muted-foreground">
+                        {method.description}
+                      </p>
+                    </CardHeader>
+                    <CardContent>
+                      <ComparisonView
+                        originalImage={result.originalUrl}
+                        compressedImage={result.compressedUrl}
+                        originalSize={result.originalSize}
+                        compressedSize={result.compressedSize}
+                      />
+                    </CardContent>
+                  </Card>
                 );
               })}
-            </Tabs>
+            </div>
           </div>
         )}
 
