@@ -10,7 +10,7 @@ interface ImageCompareProps {
   quality?: number;
 }
 
-export function ImageCompareSlider({
+export function ImageCompare({
   originalImage,
   compressedImage,
   method,
