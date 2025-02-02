@@ -61,16 +61,14 @@ const ComparisonView = ({
     };
   }, []);
 
-  // Set initial dimensions based on the original image
   useEffect(() => {
     const img = originalImageRef.current;
     if (img) {
       const updateDimensions = () => {
         const aspectRatio = img.naturalWidth / img.naturalHeight;
-        let width = Math.min(img.naturalWidth, 800); // Max width of 800px
+        let width = Math.min(img.naturalWidth, 800);
         let height = width / aspectRatio;
         
-        // If height is too tall, constrain by height instead
         if (height > 400) {
           height = 400;
           width = height * aspectRatio;
@@ -101,7 +99,7 @@ const ComparisonView = ({
       </div>
       <div 
         ref={containerRef} 
-        className="image-container relative bg-neutral-100 rounded-lg"
+        className="relative bg-neutral-100 rounded-lg overflow-hidden"
         style={{ 
           width: dimensions.width || '100%',
           height: dimensions.height || 400,
@@ -113,7 +111,6 @@ const ComparisonView = ({
           src={originalImage}
           alt="Original"
           className="absolute top-0 left-0 w-full h-full object-contain"
-          style={{ maxHeight: '400px' }}
         />
         <div
           className="absolute top-0 left-0 h-full overflow-hidden"
@@ -124,21 +121,21 @@ const ComparisonView = ({
             alt="Compressed"
             className="absolute top-0 left-0 w-full h-full object-contain"
             style={{ 
-              width: dimensions.width || '100%',
-              maxHeight: '400px'
+              width: `${dimensions.width}px`,
+              height: `${dimensions.height}px`
             }}
           />
         </div>
         <div
-          className="comparison-slider"
+          ref={handleRef}
+          className="absolute top-0 bottom-0 w-1 bg-white cursor-ew-resize"
           style={{ left: `${position}%` }}
         >
-          <div ref={handleRef} className="comparison-handle">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center">
             <ArrowLeftRight className="w-4 h-4 text-primary" />
           </div>
         </div>
         
-        {/* Overlay labels */}
         <div className="absolute top-2 left-2 bg-blue-500 text-white px-2 py-1 rounded text-xs">
           Original
         </div>
